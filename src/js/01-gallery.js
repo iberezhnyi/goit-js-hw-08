@@ -1,22 +1,26 @@
-// Add imports above this line
 import { galleryItems } from './gallery-items';
-// Change code below this line
-
-import galleryItemTpl from './templates/01-gallery-cards-markup.hbs';
 import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
 
 const galleryEl = document.querySelector('.gallery');
-const galleryCardsMarkup = getGalleryCardsMarkup(galleryItems);
 
-galleryEl.innerHTML = galleryCardsMarkup;
+const createGalleryCardsMarkup = galleryItemsArray =>
+  galleryItemsArray
+    .map(
+      ({ preview, original, description }) => `
+    <li>
+      <a class="gallery__item" href="${original}">
+          <img class="gallery__image"
+          src="${preview}"
+          alt="${description}" />
+      </a>
+    </li>`
+    )
+    .join('');
 
-function getGalleryCardsMarkup(galleryItems) {
-  return galleryItems.map(galleryItemTpl).join('');
-}
+galleryEl.innerHTML = createGalleryCardsMarkup(galleryItems);
 
-const fullImage = new SimpleLightbox('.gallery .gallery__link', {
-  captionPosition: 'bottom',
+new SimpleLightbox('.gallery .gallery__item', {
   captionsData: 'alt',
   captionDelay: 250,
 });

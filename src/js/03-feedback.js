@@ -1,44 +1,51 @@
 import throttle from 'lodash.throttle';
 
-const STORAGE_KEY = 'feedback-form-state';
 const refs = {
-  form: document.querySelector('form'),
-  input: document.querySelector('input'),
-  textarea: document.querySelector('textarea'),
+  form: document.querySelector('.feedback-form'),
+  email: document.querySelector('[name="email"]'),
+  message: document.querySelector('[name="message"]'),
 };
+
+const STORAGE_KEY = 'feedback-form-state';
 const formData = {};
 
-populateFormValue();
+checkTextArea();
 
-const onFormInput = e => {
-  const name = e.target.name;
-  const value = e.target.value;
-
-  formData[name] = value;
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(formData));
-};
-
-const onFormSubmit = e => {
-  e.preventDefault();
-
-  console.log(populateFormValue());
-
-  e.currentTarget.reset();
-
-  localStorage.removeItem(STORAGE_KEY);
-};
-
-refs.form.addEventListener('input', throttle(onFormInput, 500));
+refs.form.addEventListener('input', throttle(onInputForm, 500));
 refs.form.addEventListener('submit', onFormSubmit);
 
-function populateFormValue() {
-  const formValueStorage = localStorage.getItem(STORAGE_KEY);
+function checkTextArea() {
+  const savedFormData = localStorage.getItem(STORAGE_KEY);
 
-  if (formValueStorage) {
-    const formValue = JSON.parse(formValueStorage);
+  if (savedFormData) {
+    const parsedSavedFormData = JSON.parse(savedFormData);
 
-    refs.input.value = formValue.email;
-    refs.textarea.value = formValue.message;
-    return formValue;
+    populateTextArea(parsedSavedFormData);
   }
+}
+
+function populateTextArea({ email, message }) {
+  refs.email.value = email ?? '';
+  formData.email = email;
+  refs.message.value = message ?? '';
+  formData.message = message;
+}
+
+function onInputForm(evt) {
+  const name = evt.target.name;
+  const value = evt.target.value;
+
+  formData[name] = value;
+
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(formData));
+}
+
+function onFormSubmit(evt) {
+  evt.preventDefault();
+
+  console.log(formData);
+  localStorage.removeItem(STORAGE_KEY);
+
+  refs.message.value = '';
+  refs.email.value = '';
 }
