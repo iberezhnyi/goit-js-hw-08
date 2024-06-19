@@ -12,6 +12,7 @@ const formData = {};
 checkTextArea();
 
 refs.form.addEventListener('input', throttle(onInputForm, 500));
+
 refs.form.addEventListener('submit', onFormSubmit);
 
 function checkTextArea() {
